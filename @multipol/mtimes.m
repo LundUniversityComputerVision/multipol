@@ -28,16 +28,9 @@ if numel(p1)==1 && numel(p2)==1
 		else
 			n1 = numel(p1.coeffs);
 			n2 = numel(p2.coeffs);
-			coeffs = zeros(1,n1*n2);
-			monomials = zeros(size(p1.monomials,1),n1*n2);
-			k = 0;
-			for i=1:n1
-				for j=1:n2
-					k = k+1;
-					coeffs(k) = p1.coeffs(i)*p2.coeffs(j);
-					monomials(:,k) = p1.monomials(:,i)+p2.monomials(:,j);
-				end
-			end
+			coeffs = kron(p1.coeffs,p2.coeffs);
+			monomials = p1.monomials(:,ceil((1:n1*n2)/n2)) + ...
+                        p2.monomials(:,repmat(1:n2,1,n1));
 			p3 = multipol(coeffs,monomials);
 		end
 		p3 = sort(p3);
