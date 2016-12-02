@@ -46,7 +46,8 @@ for i=size(M,2):-1:1
 	mon(i,1) = multipol(1,M(:,i));
 end
 
-C = zeros(numel(p),size(M,1));
+%C = zeros(numel(p),size(M,1));
+C = zeros(numel(p),size(M,2)); % bugfix Viktor 20160816
 for i=1:numel(p)
 	ind = ib(inds{i});
 	C(i,ind) = coeffs(p(i));
