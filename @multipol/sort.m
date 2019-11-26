@@ -28,8 +28,8 @@ for i=1:numel(p)
 		p(i).monomials = m(:,ia);
 		
 		c = zeros(1,numel(ia));
-		for j=1:numel(ia)
-			c(j) = sum(p(i).coeffs(ib==j));
+		for j=1:numel(ib)
+			c(ib(j)) = c(ib(j))+p(i).coeffs(j);
 		end
 		p(i).coeffs = c;
 		
