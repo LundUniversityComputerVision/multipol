@@ -25,46 +25,56 @@ elseif nargin==1
 			s = reshape(s,size(coeffs));
 		end
 	
-	elseif isa(coeffs,'sym') % Så fulhackat så man skäms... varning för eventuella fel!
-		S = coeffs;
-		vars = sort(symvar(S));
-		nvar = numel(vars);
-		
-		fprintf('Substituting [')
-		for i=1:nvar-1
-			fprintf('%s, ',char(vars(i)));
-		end
-		fprintf('%s] --> [',char(vars(nvar)));
-		for i=1:nvar-1
-			fprintf('x%u, ',i);
-		end
-		fprintf('x%u]\n',nvar);
-		
-		varstr = char(vars);
-		ind_gt = zeros(nvar,1);
-		for i=1:nvar
-			ind_gt(i) = regexp(varstr,['[^a-z]' char(vars(i)) '[^0-9]']);
-		end
-		for i=numel(S):-1:1
-			pl = sym(mupadmex('poly2list',char(S(i))));
-			nterms = numel(pl);
-			m = zeros(nvar,nterms);
-			coeffs = zeros(1,nterms);
-			vars_i = sort(symvar(S(i)));
-			ind = zeros(numel(vars_i),1);
-			for t=1:numel(vars_i)
-				ind(t) = find(ind_gt==regexp(varstr,['[^a-z]' char(vars_i(t)) '[^0-9]']));
-			end
-			for j=1:nterms
-				d = pl(j);
-				coeffs(j) = d(1);
-				m(ind,j) = d(2)';
-			end
-			s(i,1) = multipol(coeffs,m);
-		end
-		
-	end
-	
+	elseif isa(coeffs,'sym')
+        % Still a bit hacky, but better than before
+        p = expand(coeffs);
+        vars = sort(symvar(p));
+        nvars = numel(vars);
+        
+        all_vars = char(vars);
+        all_vars = erase(all_vars,"matrix([[");
+        all_vars = erase(all_vars,"]])");
+        all_vars = split(all_vars, ', ');
+        
+        pstr = char(p);
+        pstr = strrep(pstr,' - ',' + -');
+        terms = split(pstr, ' + ');
+        nterms = numel(terms);
+        
+        monomials = zeros(nvars, nterms);
+        coeffs = zeros(1, nterms);
+        
+        for j = 1:nterms
+            t = terms{j};
+            if t(1) == '-' && ~isempty(regexp(t(2), '[a-z]', 'once'))
+                t = ['-1*', t(2:end)];
+            elseif ~isempty(regexp(t(1), '[a-z]', 'once'))
+                t = ['1*', t];
+            end
+            
+            tmp = split(t, '*');
+            for k = 1:numel(tmp)
+                u = split(tmp{k}, '^');
+                index = find(strcmp(all_vars, u{1}));
+                
+                if isempty(index)
+                    % This is a constant
+                    coeffs(j) = str2double(u{1});
+                else
+                    % This is a variable, possibly with a power
+                    if numel(u) == 1
+                        monomials(index,j) = 1;
+                    elseif numel(u) == 2
+                        monomials(index,j) = str2double(u{2});
+                    else
+                        error('Something went wrong.')
+                    end
+                end
+            end
+        end
+        s = multipol(coeffs, monomials);
+        s = sort(s);
+    end
 elseif nargin==2 && isnumeric(coeffs) && isnumeric(monomials)
 	
 	if isempty(coeffs)
