@@ -1,6 +1,6 @@
 function [eq ind] = sortpolys(eq)
 
-	if ~isvector(A)
+	if ~isvector(eq)
 		error('NYI: sortpolys does not yet support matrix inputs.');
 	end
 
