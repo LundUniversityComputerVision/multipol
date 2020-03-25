@@ -7,7 +7,6 @@ if nargin<2
 end
 
 for i=1:numel(p)
-	
 	m = p(i).monomials;
 	
 	if ~isempty(m)
@@ -27,14 +26,12 @@ for i=1:numel(p)
 		
 		p(i).monomials = m(:,ia);
 		
-		c = zeros(1,numel(ia));
-		for j=1:numel(ib)
-			c(ib(j)) = c(ib(j))+p(i).coeffs(j);
-		end
+		% This is fast but looks weird. This should be changed if there is
+		% a more appropriate built-in function.
+		c = full(sparse(ones(size(ib)),ib,p(i).coeffs,1,length(ia)));
 		p(i).coeffs = c;
-		
 	else
 		p.coeffs = sum(p.coeffs(:));
 	end
-	
 end
+

@@ -1,8 +1,12 @@
 function [eq ind] = sortpolys(eq)
 
-ind = 1:numel(eq);
-quicksort(1,numel(eq));
-eq = eq(ind);
+	if ~isvector(A)
+		error('NYI: sortpolys does not yet support matrix inputs.');
+	end
+
+	ind = 1:numel(eq);
+	quicksort(1,numel(eq));
+	eq = eq(ind);
 
 	function quicksort(a,b)
 		if a<b
