@@ -17,7 +17,7 @@ d = rec_det(A);
 		elseif all(size(A)==[2 2])
 			d = A(1,1)*A(2,2)-A(1,2)*A(2,1);
 		else
-			d = 0;
+			d = multipol(0);
 			for c=1:size(A,2)
 				if ~all(coeffs(A(1,c))==0) % zero polynomial
 					d = d + (mod(c,2)*2-1) * A(1,c) * rec_det(A(2:end,[1:c-1 c+1:end]));
