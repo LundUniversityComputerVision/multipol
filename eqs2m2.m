@@ -30,5 +30,5 @@ fprintf(fid,'%s\n','nrsols = degreei');
 fprintf(fid,'%s\n','a = gens gb I');
 fprintf(fid,'%s\n','lta = leadTerm a');
 fprintf(fid,'%s\n',[' "' fname '.out" << dimi << endl << nrsols << endl << lta << endl << close']);
-fprintf(fid,'%s\n','quit');
+fprintf(fid,'%s\n','quit();');
 fclose(fid);
