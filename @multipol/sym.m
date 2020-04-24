@@ -34,4 +34,4 @@ end
 
 % Use CHAR conversion routine first, should be faster
 
-s = sym(char(mp,xyzw));
+s = str2sym(char(mp,xyzw));
