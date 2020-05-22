@@ -1,28 +1,34 @@
-function p1 = create_upto_degree(vars_degree,max_degree)
-% p1 = create_upto_degree(vars_degree,max_degree)
-% CREATE_UPTO_DEGREE - Creates a multipol object with degree up to
-% the numbers in var degree. The maximum degree accepted is in
-% max_degree. 
-%   
+function p = create_upto_degree(vars_degree,max_degree)
+% CREATE_UPTO_DEGREE Create all monomials up to a degree
+% p = CREATE_UPTO_DEGREE(vars_degree,max_degree) creates a polynomial
+% consisting of all monomials of degree up to the numbers in var_degree.
+% The maximum total degree accepted is max_degree.
 
 if nargin == 1
    max_degree = inf;
 end
 
-monomials = [];
-for ii = 1:length(vars_degree)
-   monomials = [monomials 0:vars_degree(ii)];
+vars_degree = min(vars_degree,max_degree);
+
+nvars = length(vars_degree);
+degs = zeros(nvars,1);
+mons = [];
+done = false;
+while ~done
+    mons = [mons degs];
+    for i = 1:nvars
+        degs(i) = degs(i) + 1;
+        if degs(i) > vars_degree(i) || sum(degs) > max_degree
+            degs(i) = 0;
+            if i == nvars
+                done = true;
+            end
+        else
+            break;
+        end
+    end
 end
-monomials = nchoosek(monomials',length(vars_degree));
 
-for ii = 1:length(vars_degree)
-   to_big = find(monomials(:,ii)>vars_degree(ii));
-   monomials(to_big,:) = [];
-end
-
-to_big = find(sum(monomials')>max_degree);
-monomials(to_big,:) = [];
-
-coeffs = ones(1,size(monomials,1));
-p1=multipol(coeffs,monomials');
-p1=sort(p1);
+coeffs = ones(1,size(mons,2));
+p = multipol(coeffs,mons);
+p = sort(p);
