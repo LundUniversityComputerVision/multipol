@@ -1,9 +1,9 @@
 function eqs2m2(eqs,fname)
 
 
-[C M] = polynomials2matrix(eqs);
-C = round(C);
-eqs = C*M;
+for i=1:numel(eqs)
+    eqs(i) = multipol(round(coeffs(eqs(i))),monomials(eqs(i)));
+end
 
 varstr = '';
 for i=1:nvars(eqs(1))
