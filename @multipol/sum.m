@@ -1,29 +1,32 @@
-function S=sum(X,dim)
-% SUM Sum of elements.
-%    S = SUM(X) is the sum of the elements of the vector X. If
-%    X is a matrix, S is a row vector with the sum over each
-%    column. 
-% 
-%    S = SUM(X,DIM) sums along the dimension DIM. 
+function S = sum(X,DIM)
+%SUM Sum of elements.
+%   S = SUM(X) is the sum of the elements of the vector X. If X is a matrix,
+%   S is a row vector with the sum over each column. For N-D arrays,
+%   SUM(X) operates along the first non-singleton dimension.
+%
+%   S = SUM(X,'all') sums all elements of X.
+%
+%   S = SUM(X,DIM) sums along the dimension DIM.
 
-% If dimension is given transpose X if neccessery and then cal sum again.
-if nargin == 2
-    if dim == 2
-        S = sum(X')';
-    else
-        S = sum(X);
+if nargin < 2
+    DIM = find(size(X) ~= 1,1);
+    if isempty(DIM)
+        DIM = 1;
     end
-else
-    % If it is an vector
-    if  min(size(X))==1
-        S = multipol();
-        for ii = 1:length(X);
-            S = S+X(ii);
-        end
-    else
-        % If X is a matrix sum over the columns
-        for ii = 1:size(X,2);
-            S(ii) = sum(X(:,ii));
-        end
-    end
+elseif strcmp(DIM,'all')
+    S = sum(X(:));
+    return
+end
+
+Ssize = size(X);
+Ssize(DIM) = 1;
+S = multipol()*zeros(Ssize);
+
+subs = cell(ndims(X),1);
+subs(:) = {':'};
+ss = substruct('()',subs);
+
+for i = 1:size(X,DIM)
+    ss.subs{DIM} = i;
+    S = S+subsref(X,ss);
 end
